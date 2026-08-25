@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0b0d10">
+<title>SPFL | Professional League</title>
+<style>
+:root{
+  --bg:#090a0c;--panel:#111316;--panel2:#15171a;--line:#25282d;
+  --text:#f5f7fa;--muted:#9298a2;--blue:#3b82f6;--green:#16c784;
+  --yellow:#f5c542;--red:#ef476f;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,Helvetica,sans-serif}
+button,input,textarea,select{font:inherit}
+a{color:inherit;text-decoration:none}
+.app{min-height:100vh}
+.topbar{height:70px;border-bottom:1px solid var(--line);background:#0c0d0f;display:flex;align-items:center;gap:22px;padding:0 24px;position:sticky;top:0;z-index:20}
+.brand{display:flex;align-items:center;gap:10px;min-width:210px}
+.logo{width:40px;height:40px;border:1px solid #3b3e43;border-radius:50%;display:grid;place-items:center;font-weight:900;color:white;background:#17191d}
+.brand b{font-size:15px;letter-spacing:2px}.brand span{display:block;color:#8d929a;font-size:11px;letter-spacing:2px}
+.nav{display:flex;gap:5px;align-items:center;overflow:auto;white-space:nowrap}
+.nav button{background:none;border:0;color:#b8bdc5;padding:11px 15px;border-radius:22px;cursor:pointer}
+.nav button:hover,.nav button.active{background:#151f31;color:#72a9ff;box-shadow:inset 0 0 0 1px #20314c}
+.admin{margin-left:auto;border:1px solid #075c42;background:#0b211a;color:#4ee0aa;border-radius:22px;padding:10px 16px;font-size:11px;font-weight:bold;letter-spacing:1.5px}
+.layout{display:grid;grid-template-columns:235px 1fr}
+.sidebar{border-right:1px solid var(--line);min-height:calc(100vh - 70px);padding:30px 18px;position:sticky;top:70px;height:calc(100vh - 70px);background:#0c0d0f}
+.side-title{font-size:10px;color:#7e848d;letter-spacing:2px;margin:18px 10px}
+.side button{display:block;width:100%;border:0;background:none;color:#aeb3bc;text-align:left;padding:14px 14px;border-radius:14px;margin:3px 0;cursor:pointer}
+.side button:hover,.side button.active{background:#151f31;color:#78adff}
+main{min-width:0}
+.page{display:none;padding:38px clamp(18px,4vw,48px);max-width:1500px;margin:auto}
+.page.active{display:block}
+.hero{display:grid;grid-template-columns:1.45fr .8fr;gap:24px;align-items:stretch}
+.hero-main{padding:8px 0 25px}
+.eyebrow{color:#3d8cff;font-size:10px;font-weight:bold;letter-spacing:2px;text-transform:uppercase}
+h1{font-size:clamp(38px,5vw,72px);line-height:.96;margin:14px 0 18px;letter-spacing:-3px}
+h2{font-size:28px;margin:8px 0}.sub{color:#9ca2ab;line-height:1.6;max-width:700px}
+.card{background:linear-gradient(145deg,#131518,#0e1012);border:1px solid var(--line);border-radius:22px;padding:22px;box-shadow:0 15px 45px #0004}
+.live-card{display:flex;flex-direction:column;justify-content:space-between;min-height:260px}
+.badge{display:inline-flex;border:1px solid #603044;background:#24131b;color:#ff6f91;padding:6px 10px;border-radius:20px;font-size:9px;letter-spacing:1.5px}
+.match-team{display:flex;align-items:center;justify-content:space-between;background:#101113;border:1px solid #202328;border-radius:16px;padding:16px;margin-top:10px}
+.crest{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:#1d2229;font-size:21px}
+.team{display:flex;align-items:center;gap:12px;font-weight:bold}
+.score{font-size:26px;font-weight:900}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:25px 0}
+.stat strong{font-size:28px;display:block;margin-top:14px}.stat small{color:#858b94;letter-spacing:1.5px;font-size:9px}
+.section-head{display:flex;align-items:end;justify-content:space-between;margin:38px 0 18px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.grid2{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
+.fixtures{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}
+.fixture{background:#101214;border:1px solid #23262a;border-radius:17px;padding:18px}
+.fixture .date{font-size:9px;color:#4b9cff;letter-spacing:1px}.fixture .vs{display:flex;justify-content:space-between;align-items:center;margin:18px 0}
+.table-wrap{overflow:auto;border:1px solid #252a30;border-radius:18px;background:#0e1116}
+table{border-collapse:collapse;width:100%;min-width:680px}th,td{padding:13px 12px;border-bottom:1px solid #242830;text-align:left;font-size:12px}th{color:#7f8792;font-size:9px;letter-spacing:1.3px}tr:hover{background:#151a21}.pos{color:#54d8a8;font-weight:bold}
+.teamcell{display:flex;align-items:center;gap:10px}.mini{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:#20252c}
+.notice{border-left:3px solid var(--blue);padding:14px 16px;background:#111822;border-radius:10px;color:#cbd3df}
+.tabs{display:flex;gap:8px;overflow:auto;margin-bottom:18px}.tabs button{border:1px solid #292d34;background:#111316;color:#9ea4ad;padding:10px 14px;border-radius:12px}.tabs button.active{color:#fff;background:#182238;border-color:#29466f}
+.form{display:grid;gap:14px}.form label{font-size:10px;color:#8e949e;letter-spacing:1px}.form input,.form textarea,.form select{width:100%;background:#0b0d10;border:1px solid #292d33;color:white;padding:13px 14px;border-radius:12px;outline:none}.form textarea{min-height:120px;resize:vertical}.form input:focus,.form textarea:focus{border-color:#3d82e8}
+.btn{border:0;background:#2677e8;color:white;padding:13px 18px;border-radius:12px;font-weight:bold;cursor:pointer}.btn.green{background:#087b52}.btn.secondary{background:#20242a}
+.cups{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}.cup{min-height:160px;display:flex;flex-direction:column;justify-content:space-between}.cup .cupicon{font-size:36px}
+.admin-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.admin-row{display:grid;grid-template-columns:1fr 90px;gap:10px;align-items:end;margin-bottom:12px}
+footer{border-top:1px solid var(--line);padding:30px 20px;color:#777d86;text-align:center;font-size:12px;margin-top:30px}
+.mobile-bottom{display:none}
+
+.player-card{position:relative;overflow:hidden;min-height:390px;display:flex;flex-direction:column;justify-content:space-between}.player-card .roblox{height:205px;border-radius:15px;background:linear-gradient(180deg,#252a30,#111316);display:grid;place-items:center;font-size:95px;filter:grayscale(1)}.player-card .grl{position:absolute;top:18px;left:18px;font-size:38px;font-weight:900;line-height:.9}.player-card .grl small{display:block;font-size:9px;letter-spacing:2px;color:#9ba1a9;margin-top:5px}.player-card h3{margin:14px 0 4px;font-size:20px}.player-card .teamname{color:#9ca2ab;font-size:12px}.free-badge{display:inline-flex;align-items:center;gap:6px;margin-top:12px;padding:7px 10px;border-radius:10px;background:#1d2024;border:1px solid #34383e;color:#d5d8dc;font-size:10px;font-weight:bold}
+.toast{position:fixed;right:20px;bottom:20px;background:#15191e;border:1px solid #2d343d;padding:13px 16px;border-radius:13px;display:none;z-index:50}
+@media(max-width:1050px){
+ .layout{grid-template-columns:190px 1fr}.brand{min-width:170px}.nav button{padding:9px 10px}
+ .hero{grid-template-columns:1fr}.grid3,.fixtures{grid-template-columns:1fr 1fr}.cups{grid-template-columns:1fr 1fr}
+}
+@media(max-width:720px){
+ .topbar{height:60px;padding:0 13px;gap:10px}.brand{min-width:auto}.brand div{display:none}.brand span{display:none}.brand b{font-size:12px}
+ .nav{display:none}.admin{margin-left:auto;padding:8px 10px;font-size:9px}
+ .layout{display:block}.sidebar{display:none}.page{padding:24px 14px 88px}
+ h1{font-size:43px;letter-spacing:-2px}.stats{grid-template-columns:1fr 1fr}.grid2,.grid3,.fixtures,.cups,.admin-grid{grid-template-columns:1fr}
+ .card{border-radius:17px;padding:17px}.section-head{margin-top:28px}.section-head h2{font-size:22px}
+ .mobile-bottom{position:fixed;display:flex;bottom:0;left:0;right:0;height:68px;background:#0c0e11eF;border-top:1px solid #292d33;backdrop-filter:blur(14px);z-index:30;justify-content:space-around;padding:8px}
+ .mobile-bottom button{background:none;border:0;color:#858b94;font-size:10px;display:flex;flex-direction:column;gap:4px;align-items:center}.mobile-bottom button.active{color:#6ea8ff}
+}
+
+/* ===== RETRO MODERN MENU + COMMUNITY ===== */
+:root{
+  --retro:#8b5cf6;
+  --cyan:#22d3ee;
+  --gold:#f5c542;
+  --pink:#ff5fa2;
+}
+.topbar{
+  background:linear-gradient(180deg,#101217,#0b0d10);
+  box-shadow:0 8px 30px #0006;
+}
+.menu-toggle{
+  display:none;border:1px solid #343944;background:#151820;color:#fff;
+  width:42px;height:42px;border-radius:12px;font-size:20px;cursor:pointer;
+}
+.retro-menu{
+  border:1px solid #292e39;
+  background:linear-gradient(145deg,#12151b,#0d0f13);
+  border-radius:20px;
+  padding:16px;
+  margin-bottom:20px;
+  box-shadow:0 18px 50px #0005;
+}
+.menu-grid{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:10px;
+}
+.menu-tile{
+  border:1px solid #2b303a;background:#111419;color:#b9c0ca;
+  border-radius:14px;padding:13px;text-align:left;cursor:pointer;
+  transition:.18s;min-height:68px;
+}
+.menu-tile:hover,.menu-tile.active{
+  transform:translateY(-2px);border-color:#4f63a0;
+  background:linear-gradient(145deg,#182035,#11151d);color:#fff;
+}
+.menu-tile strong{display:block;font-size:12px;margin-top:5px}
+.menu-tile small{color:#777f8b;font-size:9px;letter-spacing:1px}
+.community-card{
+  background:linear-gradient(145deg,#171124,#10131b);
+  border:1px solid #3b3159;
+}
+.link-btn{
+  display:inline-flex;align-items:center;gap:8px;padding:12px 15px;
+  border-radius:12px;background:#202638;border:1px solid #394564;
+  margin:5px 5px 0 0;font-weight:bold;font-size:12px;
+}
+.link-btn.primary{background:#5b3cc4;border-color:#8064e8}
+.link-btn.green{background:#087b52;border-color:#18a976}
+.chat-layout{display:grid;grid-template-columns:1fr 280px;gap:18px}
+.chat-box{height:440px;overflow:auto;background:#0b0d10;border:1px solid #282d36;border-radius:18px;padding:15px}
+.chat-msg{display:flex;gap:10px;margin-bottom:14px}
+.chat-avatar{width:36px;height:36px;border-radius:11px;background:#242936;display:grid;place-items:center;flex:none}
+.chat-msg b{font-size:12px}.chat-msg small{color:#666f7c;margin-left:7px}
+.chat-msg p{margin:4px 0 0;color:#c4c9d1;font-size:13px;line-height:1.5}
+.chat-img{max-width:180px;max-height:150px;border-radius:12px;margin-top:7px;border:1px solid #343944}
+.chat-compose{margin-top:12px}
+.chat-compose textarea{min-height:80px}
+.chat-preview{display:flex;gap:8px;align-items:center;color:#9298a2;font-size:11px;margin-top:8px}
+.about-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
+.feature-list{display:grid;gap:10px;margin-top:15px}
+.feature-item{display:flex;gap:10px;align-items:flex-start;padding:12px;border-radius:14px;background:#101319;border:1px solid #252b34}
+.feature-icon{width:34px;height:34px;border-radius:10px;background:#1d2431;display:grid;place-items:center;flex:none}
+.kicker{display:inline-flex;padding:6px 9px;border-radius:9px;background:#191d28;border:1px solid #303746;color:#aab3c3;font-size:9px;letter-spacing:1.4px}
+@media(max-width:900px){.menu-grid{grid-template-columns:repeat(2,1fr)}.chat-layout,.about-grid{grid-template-columns:1fr}}
+@media(max-width:720px){
+ .menu-toggle{display:block}
+ .retro-menu{border-radius:16px;padding:12px}
+ .menu-grid{grid-template-columns:1fr 1fr;gap:8px}
+ .menu-tile{min-height:62px;padding:10px}
+ .topbar .brand{order:2}.topbar .menu-toggle{order:1}.topbar .admin{order:3}
+}
+
+</style>
+</head>
+<body>
+<div class="app">
+<header class="topbar">
+  <button class="menu-toggle" id="menuToggle" aria-label="Abrir menú">☰</button>
+  <div class="brand"><div class="logo">SF</div><div><b>PROFESSIONAL</b><span>SPFL</span></div></div>
+  <nav class="nav" id="topNav">
+    <button data-page="inicio" class="active">Inicio</button>
+    <button data-page="premier">Premier</button>
+    <button data-page="championship">Championship</button>
+    <button data-page="facup">FA Cup</button>
+    <button data-page="cartas">Cartas</button>
+    <button data-page="chat">Chat</button>
+    <button data-page="juego">SF27</button>
+    <button data-page="liga">La Liga</button>
+  </nav>
+  <div class="admin">ADMIN EDITOR</div>
+</header>
+<div class="layout">
+<aside class="sidebar">
+<div class="logo" style="margin:0 auto 30px">SF</div>
+<div class="side-title">CENTRO</div>
+<div class="side" id="sideNav">
+<button data-page="inicio" class="active">🏠 Inicio</button>
+<button data-page="cartas">🪪 Cartas</button>
+<button data-page="chat">💬 Chat general</button>
+</div>
+<div class="side-title">COMPETICIONES</div>
+<div class="side">
+<button data-page="premier">🏆 Premier League</button>
+<button data-page="championship">⚽ Championship</button>
+<button data-page="facup">🏆 FA Cup</button>
+<button data-page="shield">🛡️ Community Shield</button>
+</div>
+<div class="side-title">SF27 & LIGA</div>
+<div class="side">
+<button data-page="juego">🎮 Sobre SF27</button>
+<button data-page="liga">👑 Sobre la Liga</button>
+<button data-page="solicitudes">📝 Solicitudes</button>
+<button data-page="updates">📰 Updates</button>
+<button data-page="admin">⚙️ Admin Editor</button>
+</div>
+</aside>
+<main>
+
+<div class="retro-menu">
+  <div class="section-head" style="margin:0 0 12px">
+    <div>
+      <span class="kicker">⚡ ACCESO RÁPIDO</span>
+      <h2 style="margin-top:10px">Centro SPFL</h2>
+    </div>
+    <span class="eyebrow">RETRO / MODERNO</span>
+  </div>
+  <div class="menu-grid">
+    <button class="menu-tile active" data-page="inicio">🏠<strong>Inicio</strong><small>DASHBOARD</small></button>
+    <button class="menu-tile" data-page="cartas">🪪<strong>Cartas</strong><small>GRL 70</small></button>
+    <button class="menu-tile" data-page="chat">💬<strong>Chat general</strong><small>COMUNIDAD</small></button>
+    <button class="menu-tile" data-page="juego">🎮<strong>SF27</strong><small>EL JUEGO</small></button>
+    <button class="menu-tile" data-page="liga">👑<strong>La Liga</strong><small>PREMIER LUEGE</small></button>
+    <button class="menu-tile" data-page="premier">🏆<strong>Premier</strong><small>COMPETICIÓN</small></button>
+    <button class="menu-tile" data-page="championship">⚽<strong>Championship</strong><small>ASCENSOS</small></button>
+    <button class="menu-tile" data-page="updates">📰<strong>Updates</strong><small>NOVEDADES</small></button>
+  </div>
+</div>
+
+<section class="page active" id="inicio">
+<div class="hero">
+<div class="hero-main"><div class="eyebrow">Liga de rol • Inglaterra</div><h1>Dashboard<br>profesional<br>de la SPFL.</h1><p class="sub">Toda la acción de tu liga de rol en un solo lugar: resultados, clasificación, jornadas, copas y novedades del servidor.</p></div>
+<div class="card live-card"><div><div style="display:flex;justify-content:space-between;align-items:center"><div class="eyebrow">COMPETICIÓN</div><span class="badge">EN VIVO</span></div><h2>Premier League</h2></div><div><div class="match-team"><div class="team"><span class="crest">🔴</span>Arsenal</div><b class="score">2</b></div><div class="match-team"><div class="team"><span class="crest">🔴</span>Liverpool</div><b class="score">2</b></div></div><small style="color:#858b94">20:00 • Emirates Stadium</small></div>
+</div>
+<div class="stats">
+<div class="card stat"><div class="crest">🏆</div><strong>20</strong><small>EQUIPOS PL</small></div>
+<div class="card stat"><div class="crest">⚽</div><strong>0</strong><small>JUGADORES</small></div>
+<div class="card stat"><div class="crest">📅</div><strong>0</strong><small>PARTIDOS</small></div>
+<div class="card stat"><div class="crest">📈</div><strong>0.0</strong><small>PROMEDIO DE GOLES</small></div>
+</div>
+<div class="section-head"><div><div class="eyebrow">PARTIDO DESTACADO</div><h2>Jornada principal</h2></div></div>
+<div class="card"><div class="team" style="justify-content:space-between"><span>🔴 Arsenal</span><strong style="font-size:32px">2 : 2</strong><span>Liverpool 🔴</span></div></div>
+<div class="section-head"><div><div class="eyebrow">PRÓXIMOS PARTIDOS</div><h2>Próximas 5 fechas</h2></div></div>
+<div class="fixtures">
+<div class="fixture"><span class="date">PRÓXIMO</span><div class="vs"><span>🔵 Chelsea</span><b>—</b><span>Manchester City 🔵</span></div><small>Fecha por confirmar</small></div>
+<div class="fixture"><span class="date">PRÓXIMO</span><div class="vs"><span>🔴 Man United</span><b>—</b><span>Tottenham ⚪</span></div><small>Fecha por confirmar</small></div>
+<div class="fixture"><span class="date">PRÓXIMO</span><div class="vs"><span>Southampton 🔴</span><b>—</b><span>Sheffield United 🔴</span></div><small>Fecha por confirmar</small></div>
+</div>
+</section>
+
+<section class="page" id="premier">
+<div class="card"><div class="eyebrow">COMPETICIÓN</div><h1 style="font-size:45px">Premier League</h1><p class="sub">Tabla oficial de la máxima categoría de la liga de rol.</p></div>
+<div class="section-head"><div><div class="eyebrow">TABLA</div><h2>Clasificación</h2></div></div>
+<div class="table-wrap"><table><thead><tr><th>#</th><th>EQUIPO</th><th>PJ</th><th>G</th><th>E</th><th>P</th><th>GF</th><th>GC</th><th>DG</th><th>PTS</th></tr></thead><tbody id="premierTable"></tbody></table></div>
+</section>
+
+<section class="page" id="championship">
+<div class="card"><div class="eyebrow">COMPETICIÓN</div><h1 style="font-size:45px">Championship</h1><p class="sub">La competición de ascenso. Aquí podrás consultar calendario y clasificación.</p></div>
+<div class="grid2" style="margin-top:22px"><div><div class="section-head"><div><div class="eyebrow">FIXTURES</div><h2>Calendario</h2></div></div><div class="fixture"><span class="date">PRÓXIMO</span><div class="vs"><span>🟦 Birmingham City</span><b>—</b><span>Ipswich Town 🟦</span></div><small>St. Andrew's • Por confirmar</small></div><div class="fixture" style="margin-top:12px"><span class="date">PRÓXIMO</span><div class="vs"><span>Southampton</span><b>—</b><span>Sheffield United</span></div><small>St Mary's • Por confirmar</small></div></div>
+<div><div class="section-head"><div><div class="eyebrow">TABLA</div><h2>Clasificación</h2></div></div><div class="table-wrap"><table><thead><tr><th>#</th><th>EQUIPO</th><th>PJ</th><th>PTS</th></tr></thead><tbody id="champTable"></tbody></table></div></div></div>
+</section>
+
+<section class="page" id="facup">
+<div class="card"><div class="eyebrow">COMPETICIÓN</div><h1 style="font-size:45px">FA Cup</h1><p class="sub">Eliminación directa. Todo se decide en cada enfrentamiento.</p></div>
+<div class="section-head"><div><div class="eyebrow">CUADRO</div><h2>Partidos de la copa</h2></div></div>
+<div class="grid2"><div class="fixture"><span class="date">CUARTOS • PRÓXIMO</span><div class="vs"><span>Arsenal 🔴</span><b>—</b><span>Liverpool 🔴</span></div><small>Estadio por confirmar</small></div><div class="fixture"><span class="date">CUARTOS • PRÓXIMO</span><div class="vs"><span>Manchester City 🔵</span><b>—</b><span>Chelsea 🔵</span></div><small>Estadio por confirmar</small></div></div>
+<div class="section-head"><div><div class="eyebrow">ELIMINACIÓN DIRECTA</div><h2>Cuadro de la FA Cup</h2></div></div>
+<div class="grid2"><div class="card"><h3>Semifinal 1</h3><p>Ganador QF1 vs Ganador QF2</p><span class="badge">PENDIENTE</span></div><div class="card"><h3>Semifinal 2</h3><p>Ganador QF3 vs Ganador QF4</p><span class="badge">PENDIENTE</span></div></div>
+</section>
+
+<section class="page" id="shield">
+<div class="card"><div class="eyebrow">COMPETICIÓN</div><h1 style="font-size:45px">Community Shield</h1><p class="sub">La previa de la temporada: campeón de liga contra campeón de copa.</p></div>
+<div class="section-head"><div><div class="eyebrow">PARTIDO ÚNICO</div><h2>Enfrentamiento de la temporada</h2></div></div>
+<div class="card"><div class="match-team"><div class="team"><span class="crest">🔴</span>Arsenal</div><strong class="score">—</strong><div class="team">Liverpool <span class="crest">🔴</span></div></div><p style="color:#858b94">Estadio por confirmar • Fecha por confirmar</p></div>
+</section>
+
+<section class="page" id="cartas"><div class="card"><div class="eyebrow">JUGADORES</div><h1 style="font-size:45px">Cartas de la Liga</h1><p class="sub">Todos los miembros empiezan con <b>70 GRL</b>. Al conectar Discord, las cartas se crearán automáticamente y el equipo se asignará según su rol.</p></div><div class="section-head"><div><div class="eyebrow">PLANTILLA</div><h2>Jugadores</h2></div><input id="cardSearch" oninput="renderCards()" placeholder="Buscar jugador..." style="max-width:240px;background:#0b0d10;border:1px solid #292d33;color:white;padding:11px 13px;border-radius:12px"></div><div class="grid3" id="cardsGrid"></div><div class="notice" style="margin-top:18px">🆓 Los miembros sin rol de equipo aparecen como <b>Agente Libre</b> y usan <b>:emoji_30:</b>.</div></section>
+
+<section class="page" id="chat">
+  <div class="card community-card">
+    <span class="kicker">💬 COMUNIDAD</span>
+    <h1 style="font-size:45px">Chat general</h1>
+    <p class="sub">Un espacio para que la comunidad hable de la liga, comparta opiniones, ideas, resultados y momentos de SF27.</p>
+  </div>
+
+  <div class="chat-layout" style="margin-top:20px">
+    <div class="card">
+      <div class="section-head" style="margin-top:0">
+        <div><div class="eyebrow">CANAL PÚBLICO</div><h2>Conversación</h2></div>
+        <span class="kicker">🟢 ACTIVO</span>
+      </div>
+      <div class="chat-box" id="chatBox"></div>
+      <form class="form chat-compose" id="chatForm">
+        <input id="chatName" required maxlength="24" placeholder="Tu nombre / nombre de Discord">
+        <textarea id="chatText" maxlength="500" placeholder="Escribe tu mensaje..." required></textarea>
+        <input id="chatImage" type="file" accept="image/png,image/jpeg,image/webp">
+        <div class="chat-preview" id="chatPreview">📎 Puedes adjuntar una imagen.</div>
+        <button class="btn" type="submit">💬 Publicar mensaje</button>
+      </form>
+    </div>
+
+    <div class="card">
+      <div class="eyebrow">REGLAS RÁPIDAS</div>
+      <h2>Buen ambiente</h2>
+      <div class="feature-list">
+        <div class="feature-item"><div class="feature-icon">🤝</div><div><b>Respeto</b><br><small style="color:#8e949e">Opiniones sí, insultos no.</small></div></div>
+        <div class="feature-item"><div class="feature-icon">⚽</div><div><b>Habla de fútbol</b><br><small style="color:#8e949e">Liga, SF27, equipos y partidos.</small></div></div>
+        <div class="feature-item"><div class="feature-icon">🖼️</div><div><b>Imágenes</b><br><small style="color:#8e949e">Comparte capturas y momentos.</small></div></div>
+      </div>
+      <div class="notice" style="margin-top:15px">ℹ️ El diseño del chat ya está preparado. Para que los mensajes sean <b>compartidos entre todos los visitantes</b> y se sincronicen con Discord, habrá que conectarlo al backend/bot.</div>
+    </div>
+  </div>
+</section>
+
+<section class="page" id="juego">
+  <div class="card community-card">
+    <span class="kicker">🎮 SF27</span>
+    <h1 style="font-size:45px">Conoce el juego</h1>
+    <p class="sub">Una experiencia de fútbol de nueva generación en Roblox, pensada para jugar, competir y vivir el fútbol con tu equipo.</p>
+    <a class="link-btn primary" href="https://www.roblox.com/es/games/83009840994296/SF27" target="_blank" rel="noopener">🎮 Probar SF27 en Roblox ↗</a>
+  </div>
+
+  <div class="about-grid" style="margin-top:20px">
+    <div class="card">
+      <div class="eyebrow">¿POR QUÉ PROBARLO?</div>
+      <h2>Puede ser tu próximo juego de fútbol favorito</h2>
+      <div class="feature-list">
+        <div class="feature-item"><div class="feature-icon">📱</div><div><b>Hecho para todos</b><br><small style="color:#8e949e">La experiencia está planteada para jugar también desde móvil.</small></div></div>
+        <div class="feature-item"><div class="feature-icon">⚡</div><div><b>Partidas intensas</b><br><small style="color:#8e949e">Entra al campo y disfruta de momentos rápidos y competitivos.</small></div></div>
+        <div class="feature-item"><div class="feature-icon">🎓</div><div><b>Nuevas mecánicas</b><br><small style="color:#8e949e">Aprende y domina nuevas formas de jugar.</small></div></div>
+        <div class="feature-item"><div class="feature-icon">🏟️</div><div><b>Estadios y equipos</b><br><small style="color:#8e949e">Explora estadios y vive la experiencia de fútbol con tu equipo.</small></div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="eyebrow">COMUNIDAD</div>
+      <h2>Juega acompañado</h2>
+      <p class="sub">La liga añade una capa de competición y comunidad alrededor del juego: equipos, partidos, cartas y eventos.</p>
+      <a class="link-btn green" href="https://discord.gg/rY9eCGvN7" target="_blank" rel="noopener">💬 Entrar al Discord ↗</a>
+      <div class="notice" style="margin-top:18px">✨ Si te gusta el fútbol, las competiciones y jugar con una comunidad, merece la pena darle una oportunidad a SF27.</div>
+    </div>
+  </div>
+</section>
+
+<section class="page" id="liga">
+  <div class="card community-card">
+    <span class="kicker">👑 PREMIER LUEGE</span>
+    <h1 style="font-size:45px">Sobre la Liga</h1>
+    <p class="sub">Una liga de rol de Inglaterra creada para convertir tus partidos de SF27 en una competición con identidad, equipos y comunidad.</p>
+    <a class="link-btn primary" href="https://discord.gg/rY9eCGvN7" target="_blank" rel="noopener">💬 Unirme a la Premier Luege ↗</a>
+  </div>
+
+  <div class="about-grid" style="margin-top:20px">
+    <div class="card">
+      <div class="eyebrow">¿POR QUÉ UNIRTE?</div>
+      <h2>Más que jugar un partido</h2>
+      <div class="feature-list">
+        <div class="feature-item"><div class="feature-icon">🏟️</div><div><b>Representa un club</b><br><small style="color:#8e949e">Forma parte de un equipo y crea tu historia dentro de la competición.</small></div></div>
+        <div class="feature-item"><div class="feature-icon">🪪</div><div><b>Tu propia carta</b><br><small style="color:#8e949e">Las cartas parten de GRL 70 y se asignan según el equipo de tu rol.</small></div></div>
+        <div class="feature-item"><div class="feature-icon">🏆</div><div><b>Competiciones</b><br><small style="color:#8e949e">Premier League, Championship, FA Cup y Community Shield.</small></div></div>
+        <div class="feature-item"><div class="feature-icon">💬</div><div><b>Comunidad</b><br><small style="color:#8e949e">Participa, opina, comparte momentos y conoce a otros jugadores.</small></div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="eyebrow">PRIMEROS PASOS</div>
+      <h2>Empieza en 3 pasos</h2>
+      <div class="feature-list">
+        <div class="feature-item"><div class="feature-icon">1</div><div><b>Prueba SF27</b><br><small style="color:#8e949e">Conoce el juego y sus mecánicas.</small></div></div>
+        <div class="feature-item"><div class="feature-icon">2</div><div><b>Únete al Discord</b><br><small style="color:#8e949e">Entra en la comunidad oficial de la liga.</small></div></div>
+        <div class="feature-item"><div class="feature-icon">3</div><div><b>Elige tu camino</b><br><small style="color:#8e949e">Consigue tu rol de equipo y empieza tu carrera.</small></div></div>
+      </div>
+      <div class="notice" style="margin-top:18px">🔥 ¿Sin equipo? En la web aparecerás como <b>Agente Libre</b> hasta que tengas un rol de equipo.</div>
+    </div>
+  </div>
+</section>
+
+<section class="page" id="solicitudes">
+<div class="card"><div class="eyebrow">SERVICIOS</div><h1 style="font-size:45px">Solicitudes</h1><p class="sub">Envía tus solicitudes para la liga. Por ahora se guardan en este dispositivo.</p></div>
+<div class="grid2" style="margin-top:20px">
+<div class="card"><h2>🎮 Recomendación SF27</h2><p class="sub">Solicita una recomendación para tu equipo o plantilla.</p><form class="form" onsubmit="sendForm(event,'Recomendación enviada')"><label>USUARIO</label><input required placeholder="Tu nombre / Discord"><label>RECOMENDACIÓN</label><textarea required placeholder="¿Qué necesitas recomendar?"></textarea><button class="btn">Enviar solicitud</button></form></div>
+<div class="card"><h2>🪪 Solicitud de carta</h2><p class="sub">Solicita una carta de jugador para tu liga de rol.</p><form class="form" onsubmit="sendForm(event,'Solicitud de carta enviada')"><label>JUGADOR</label><input required placeholder="Nombre del jugador"><label>DETALLES</label><textarea required placeholder="Posición, valoración, club, etc."></textarea><button class="btn green">Solicitar carta</button></form></div>
+</div>
+</section>
+
+<section class="page" id="updates">
+<div class="card"><div class="eyebrow">NOVEDADES</div><h1 style="font-size:45px">Updates</h1><p class="sub">Actualizaciones y cambios del juego y de la liga.</p></div>
+<div class="card" style="margin-top:20px"><div class="eyebrow">UPDATE #1</div><h2>Bienvenido a la SPFL</h2><p class="sub">La web de la liga está preparada para recibir resultados, tablas, copas, cartas y nuevas funciones.</p><small style="color:#777">Fecha: por confirmar</small></div>
+</section>
+
+<section class="page" id="admin">
+<div class="card"><div class="eyebrow">ADMIN</div><h1 style="font-size:45px">Admin Editor</h1><p class="sub">Edita datos básicos de la liga. Los cambios de esta versión se guardan en el navegador mediante localStorage.</p></div>
+<div class="admin-grid" style="margin-top:20px">
+<div class="card"><h2>Partido destacado</h2><form class="form" onsubmit="saveFeatured(event)"><label>LOCAL</label><input id="home" value="Arsenal"><label>VISITANTE</label><input id="away" value="Liverpool"><div class="admin-row"><div><label>GOLES LOCAL</label><input id="hg" type="number" value="2"></div><div><label>GOLES VIS.</label><input id="ag" type="number" value="2"></div></div><button class="btn">Guardar partido</button></form></div>
+<div class="card"><h2>Aviso de actualización</h2><form class="form" onsubmit="saveUpdate(event)"><label>TÍTULO</label><input id="utitle" value="Nueva actualización"><label>MENSAJE</label><textarea id="umsg" placeholder="Escribe aquí la actualización..."></textarea><button class="btn green">Guardar update</button></form></div>
+</div>
+<div class="section-head"><div><div class="eyebrow">COPAS</div><h2>Competiciones</h2></div></div>
+<div class="cups">
+<div class="card cup"><div class="cupicon">🏆</div><h3>FA Cup</h3><small>Eliminación directa</small></div>
+<div class="card cup"><div class="cupicon">🛡️</div><h3>Community Shield</h3><small>Partido único</small></div>
+<div class="card cup"><div class="cupicon">👑</div><h3>Premier League</h3><small>Liga</small></div>
+<div class="card cup"><div class="cupicon">⚽</div><h3>Championship</h3><small>Ascenso y play-off</small></div>
+</div>
+</section>
+
+<footer>SPFL Professional • Liga de rol de Inglaterra • Página creada para la comunidad</footer>
+</main>
+</div>
+<nav class="mobile-bottom">
+<button data-page="inicio" class="active">🏠<span>Inicio</span></button>
+<button data-page="cartas">🪪<span>Cartas</span></button>
+<button data-page="chat">💬<span>Chat</span></button>
+<button data-page="juego">🎮<span>SF27</span></button>
+<button data-page="liga">👑<span>Liga</span></button>
+</nav>
+<div class="toast" id="toast"></div>
+</div>
+<script>
+const teams=[
+["Arsenal","🔴"],["Liverpool","🔴"],["Manchester City","🔵"],["Chelsea","🔵"],["Tottenham","⚪"],
+["Manchester United","🔴"],["Newcastle United","⚫"],["Nottingham Forest","🌳"],["Aston Villa","🟣"],["Everton","🔵"],
+["West Ham","⚒️"],["Crystal Palace","🔴"],["Brighton","🔵"],["Wolverhampton","🟡"],["Fulham","⚪"],
+["Brentford","🐝"],["Bournemouth","🔴"],["Leeds United","⚪"],["Burnley","🔴"],["Sunderland","🔴"]
+];
+const champ=["Birmingham City","Ipswich Town","Southampton","Sheffield United","Norwich City","Bristol City","Watford","Middlesbrough","Everton","Oxford United","Stoke City","Hull City"];
+function fillTables(){
+ const pt=document.getElementById("premierTable");
+ pt.innerHTML=teams.map((t,i)=>`<tr><td class="pos">${i+1}</td><td><div class="teamcell"><span class="mini">${t[1]}</span><b>${t[0]}</b></div></td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td><b>0</b></td></tr>`).join("");
+ document.getElementById("champTable").innerHTML=champ.map((t,i)=>`<tr><td class="pos">${i+1}</td><td><b>${t}</b></td><td>0</td><td><b>0</b></td></tr>`).join("");
+}
+function show(page){
+ document.querySelectorAll(".page").forEach(x=>x.classList.toggle("active",x.id===page));
+ document.querySelectorAll("[data-page]").forEach(x=>x.classList.toggle("active",x.dataset.page===page));
+ window.scrollTo({top:0,behavior:"smooth"});
+}
+document.querySelectorAll("[data-page]").forEach(b=>b.addEventListener("click",()=>show(b.dataset.page)));
+function toast(msg){const t=document.getElementById("toast");t.textContent=msg;t.style.display="block";setTimeout(()=>t.style.display="none",2500)}
+function sendForm(e,msg){e.preventDefault();toast(msg);e.target.reset()}
+function saveFeatured(e){
+ e.preventDefault();
+ const data={home:home.value,away:away.value,hg:hg.value,ag:ag.value};
+ localStorage.setItem("spfl_featured",JSON.stringify(data)); toast("Partido guardado correctamente");
+}
+function saveUpdate(e){
+ e.preventDefault();
+ localStorage.setItem("spfl_update",JSON.stringify({title:utitle.value,msg:umsg.value}));
+ toast("Update guardado correctamente");
+}
+fillTables();
+const demoCards=[{name:"Jugador Arsenal",team:"Arsenal",free:false,grl:70},{name:"Jugador Chelsea",team:"Chelsea",free:false,grl:70},{name:"Jugador Liverpool",team:"Liverpool",free:false,grl:70},{name:"Agente Libre",team:"Agente Libre",free:true,grl:70}];function renderCards(){const grid=document.getElementById("cardsGrid");if(!grid)return;const q=(document.getElementById("cardSearch")?.value||"").toLowerCase();const cards=demoCards.filter(c=>(c.name+" "+c.team).toLowerCase().includes(q));grid.innerHTML=cards.map(c=>`<div class="card player-card"><div class="grl">${c.grl}<small>GRL</small></div><div class="roblox">🧍</div><div><h3>${c.name}</h3><div class="teamname">${c.team}</div><span class="free-badge">${c.free?":emoji_30: 🆓 AGENTE LIBRE":"⚽ MIEMBRO DE EQUIPO"}</span></div></div>`).join("")}renderCards();
+
+
+// ===== MENÚ MÓVIL =====
+const menuToggle=document.getElementById("menuToggle");
+if(menuToggle){
+  menuToggle.addEventListener("click",()=>{
+    const side=document.querySelector(".sidebar");
+    if(!side) return;
+    side.style.display = side.style.display==="block" ? "" : "block";
+    side.style.position="fixed";
+    side.style.left="0";
+    side.style.top="60px";
+    side.style.bottom="68px";
+    side.style.width="280px";
+    side.style.zIndex="40";
+    side.style.overflowY="auto";
+    side.style.boxShadow="20px 0 50px #0008";
+  });
+}
+
+// ===== CHAT LOCAL (PREPARADO PARA BACKEND) =====
+const CHAT_KEY="spfl_chat_messages_v2";
+function loadChat(){
+  const box=document.getElementById("chatBox"); if(!box)return;
+  let msgs=[];
+  try{msgs=JSON.parse(localStorage.getItem(CHAT_KEY)||"[]")}catch(e){msgs=[]}
+  if(!msgs.length){
+    msgs=[{name:"SPFL",text:"¡Bienvenidos al Chat general! 💬",time:"Ahora",image:""}];
+  }
+  box.innerHTML=msgs.map(m=>`<div class="chat-msg">
+    <div class="chat-avatar">👤</div>
+    <div><b>${escapeHtml(m.name)}</b><small>${escapeHtml(m.time||"")}</small>
+    <p>${escapeHtml(m.text||"")}</p>
+    ${m.image?`<img class="chat-img" src="${m.image}" alt="Imagen adjunta">`:""}
+    </div></div>`).join("");
+  box.scrollTop=box.scrollHeight;
+}
+function escapeHtml(s){
+  return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));
+}
+const chatForm=document.getElementById("chatForm");
+const chatImage=document.getElementById("chatImage");
+const chatPreview=document.getElementById("chatPreview");
+if(chatImage){
+  chatImage.addEventListener("change",()=>{
+    chatPreview.textContent=chatImage.files?.[0] ? "🖼️ "+chatImage.files[0].name : "📎 Puedes adjuntar una imagen.";
+  });
+}
+if(chatForm){
+  chatForm.addEventListener("submit",e=>{
+    e.preventDefault();
+    const name=document.getElementById("chatName").value.trim();
+    const text=document.getElementById("chatText").value.trim();
+    const file=chatImage?.files?.[0];
+    if(!name||!text)return;
+    const save=(image="")=>{
+      let msgs=[]; try{msgs=JSON.parse(localStorage.getItem(CHAT_KEY)||"[]")}catch(e){}
+      msgs.push({name,text,image,time:new Date().toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"})});
+      msgs=msgs.slice(-50);
+      localStorage.setItem(CHAT_KEY,JSON.stringify(msgs));
+      chatForm.reset(); chatPreview.textContent="📎 Puedes adjuntar una imagen."; loadChat(); toast("Mensaje publicado");
+    };
+    if(file){
+      if(file.size>900000){toast("Imagen demasiado grande. Usa una imagen de menos de 900 KB.");return;}
+      const reader=new FileReader(); reader.onload=()=>save(reader.result); reader.readAsDataURL(file);
+    }else save("");
+  });
+}
+loadChat();
+
+</script>
+</body>
+</html>
